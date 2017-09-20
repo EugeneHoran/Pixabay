@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Pixabay</string>
+    <string name="single_column_view">Single-column view</string>
+    <string name="multi_column_view">Multi-column view</string>
+    <string name="search">Search</string>
+
+    <string-array name="string_array_categories">
+        <item>Animals</item>
+        <item>Backgrounds</item>
+        <item>Buildings</item>
+        <item>Business</item>
+        <item>Computer</item>
+        <item>Education</item>
+        <item>Fashion</item>
+        <item>Feelings</item>
+        <item>Food</item>
+        <item>Health</item>
+        <item>Industry</item>
+        <item>Music</item>
+        <item>Nature</item>
+        <item>People</item>
+        <item>Places</item>
+        <item>Religion</item>
+        <item>Science</item>
+        <item>Sports</item>
+        <item>Transportation</item>
+        <item>Travel</item>
+    </string-array>
+</resources>
