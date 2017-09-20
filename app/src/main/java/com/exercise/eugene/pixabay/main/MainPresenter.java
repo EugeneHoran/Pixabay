@@ -34,13 +34,12 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void detachView() {
         mView = null;
-        if (mDisposables != null) {
-            mDisposables.clear();
-        }
+        clearDisposibles();
     }
 
     @Override
     public void loadPixabayImages(String category, PixabayService.ORDER order, int page) {
+        clearDisposibles();
         String mCategory = null;
         if (category != null) {
             mCategory = category.toLowerCase();
@@ -67,5 +66,11 @@ public class MainPresenter implements MainContract.Presenter {
                     public void onError(@NonNull Throwable e) {
                     }
                 }));
+    }
+
+    private void clearDisposibles() {
+        if (mDisposables != null) {
+            mDisposables.clear();
+        }
     }
 }
