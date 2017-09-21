@@ -1,10 +1,13 @@
 
 package com.exercise.eugene.pixabay.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Hit {
+public class Hit implements Parcelable {
     @SerializedName("id")
     @Expose
     private Integer id;
@@ -264,4 +267,71 @@ public class Hit {
         this.imageHeight = imageHeight;
     }
 
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(this.id);
+        dest.writeString(this.type);
+        dest.writeString(this.pageURL);
+        dest.writeValue(this.previewHeight);
+        dest.writeValue(this.previewWidth);
+        dest.writeString(this.previewURL);
+        dest.writeValue(this.webformatHeight);
+        dest.writeValue(this.webformatWidth);
+        dest.writeString(this.webformatURL);
+        dest.writeValue(this.imageWidth);
+        dest.writeValue(this.imageHeight);
+        dest.writeString(this.tags);
+        dest.writeValue(this.likes);
+        dest.writeValue(this.favorites);
+        dest.writeValue(this.views);
+        dest.writeValue(this.comments);
+        dest.writeValue(this.downloads);
+        dest.writeValue(this.userId);
+        dest.writeString(this.user);
+        dest.writeString(this.userImageURL);
+    }
+
+    public Hit() {
+    }
+
+    protected Hit(Parcel in) {
+        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.type = in.readString();
+        this.pageURL = in.readString();
+        this.previewHeight = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.previewWidth = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.previewURL = in.readString();
+        this.webformatHeight = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.webformatWidth = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.webformatURL = in.readString();
+        this.imageWidth = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.imageHeight = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.tags = in.readString();
+        this.likes = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.favorites = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.views = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.comments = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.downloads = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.userId = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.user = in.readString();
+        this.userImageURL = in.readString();
+    }
+
+    public static final Parcelable.Creator<Hit> CREATOR = new Parcelable.Creator<Hit>() {
+        @Override
+        public Hit createFromParcel(Parcel source) {
+            return new Hit(source);
+        }
+
+        @Override
+        public Hit[] newArray(int size) {
+            return new Hit[size];
+        }
+    };
 }

@@ -39,12 +39,6 @@ public interface PixabayService {
             @Query("page") int page);
 
 
-    @GET(BuildConfig.KEY)
-    Observable<Pixabay> getSearchPhotos(
-            @Query("q") String search,
-            @Query("page") int page);
-
-
     class Factory {
         public static PixabayService create() {
             Retrofit.Builder builder = new Retrofit.Builder();

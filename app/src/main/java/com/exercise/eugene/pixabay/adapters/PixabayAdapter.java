@@ -1,6 +1,8 @@
 package com.exercise.eugene.pixabay.adapters;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -28,7 +30,7 @@ public class PixabayAdapter extends RecyclerView.Adapter<PixabayAdapter.ViewHold
     private PixabayAdapterListener mPixabayAdapterListener;
 
     public interface PixabayAdapterListener {
-        void onItemClicked(String imageUrl, PixabayImageView mImage);
+        void onItemClicked(Hit hit, PixabayImageView mImage);
     }
 
     public void setListener(PixabayAdapterListener categoryAdapterListener) {
@@ -99,7 +101,9 @@ public class PixabayAdapter extends RecyclerView.Adapter<PixabayAdapter.ViewHold
         public void onClick(View view) {
             if (view == mCard) {
                 if (mPixabayAdapterListener != null) {
-                    mPixabayAdapterListener.onItemClicked(mHitList.get(getAdapterPosition()).getWebformatURL(), mImage);
+                    mPixabayAdapterListener.onItemClicked(
+                            mHitList.get(getAdapterPosition()),
+                            mImage);
                 }
             }
         }

@@ -3,6 +3,7 @@ package com.exercise.eugene.pixabay.main;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -199,7 +200,7 @@ public class MainFragment extends Fragment implements MainContract.View {
 
     private PixabayAdapter.PixabayAdapterListener mPixabayListener = new PixabayAdapter.PixabayAdapterListener() {
         @Override
-        public void onItemClicked(String imageUrl, PixabayImageView mImage) {
+        public void onItemClicked(Hit hit, PixabayImageView mImage) {
             Intent intent = new Intent(getActivity(), ViewImageActivity.class);
             int location[] = new int[2];
             mImage.requestLayout();
@@ -209,7 +210,7 @@ public class MainFragment extends Fragment implements MainContract.View {
             intent.putExtra("height", mImage.getHeight());
             intent.putExtra("width", mImage.getWidth());
             Bundle bundle = new Bundle();
-            bundle.putString("url", imageUrl);
+            bundle.putParcelable("hit", hit);
             intent.putExtras(bundle);
             getActivity().startActivity(intent);
             getActivity().overridePendingTransition(0, 0);

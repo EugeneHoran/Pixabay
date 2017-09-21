@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -12,62 +11,101 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.exercise.eugene.pixabay.R;
+import com.exercise.eugene.pixabay.model.Hit;
 import com.exercise.eugene.pixabay.util.DragPhotoView;
+import com.pkmmte.view.CircularImageView;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 public class ViewImageActivity extends AppCompatActivity {
-    private DragPhotoView dragPhotoView;
-    private Toolbar toolbar;
+    private DragPhotoView mDragPhotoView;
+    private Toolbar mToolbar;
+    private CircularImageView mUserImage;
+    private LinearLayout mBottomView;
+    private Hit mHit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_view_image);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.ic_arrow_back));
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        initToolbar();
+        mDragPhotoView = (DragPhotoView) findViewById(R.id.dragPhotoView);
+        mUserImage = (CircularImageView) findViewById(R.id.userImage);
+        mBottomView = (LinearLayout) findViewById(R.id.bottomView);
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            mHit = bundle.getParcelable("hit");
+        }
+        Picasso.with(this).load(mHit.getWebformatURL()).priority(Picasso.Priority.HIGH).noFade().into(mDragPhotoView);
+        initBottomBar();
+        initListeners();
+    }
+
+    private void initBottomBar() {
+        Picasso.with(this).load(mHit.getUserImageURL()).priority(Picasso.Priority.HIGH).into(mUserImage);
+
+        TextView mUserName = (TextView) findViewById(R.id.userName);
+        TextView mViews = (TextView) findViewById(R.id.views);
+        TextView mThumbUp = (TextView) findViewById(R.id.thumbsUp);
+        TextView mStar = (TextView) findViewById(R.id.star);
+        TextView mComment = (TextView) findViewById(R.id.comment);
+
+        mUserName.setText(mHit.getUser());
+        mViews.setText(String.valueOf(mHit.getViews()));
+        mThumbUp.setText(String.valueOf(mHit.getLikes()));
+        mStar.setText(String.valueOf(mHit.getFavorites()));
+        mComment.setText(String.valueOf(mHit.getComments()));
+    }
+
+    private void initToolbar() {
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.ic_arrow_back));
+        mToolbar.inflateMenu(R.menu.menu_view_image);
+
+    }
+
+    /**
+     * Animation Listeners
+     */
+
+    private void initListeners() {
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finishWithAnimation();
             }
         });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
-        }
-        Bundle bundle = getIntent().getExtras();
-        String url = bundle.getString("url");
-        dragPhotoView = (DragPhotoView) findViewById(R.id.dragPhotoView);
-        Picasso.with(this).load(url).priority(Picasso.Priority.HIGH).noFade().into(dragPhotoView);
-
-        dragPhotoView.setOnTapListener(new DragPhotoView.OnTapListener() {
+        mDragPhotoView.setOnTapListener(new DragPhotoView.OnTapListener() {
             @Override
             public void onTap(DragPhotoView view) {
                 finishWithAnimation();
             }
         });
-        dragPhotoView.setOnExitListener(new DragPhotoView.OnExitListener() {
+        mDragPhotoView.setOnExitListener(new DragPhotoView.OnExitListener() {
             @Override
             public void onExit(DragPhotoView view, float x, float y, float w, float h) {
                 performExitAnimation(view, x, y, w, h);
             }
         });
-        dragPhotoView.setOnMoveListener(new DragPhotoView.OnMoveLister() {
+        mDragPhotoView.setOnMoveListener(new DragPhotoView.OnMoveLister() {
             @Override
             public void onMove(float alpha) {
-                toolbar.setAlpha(alpha);
-//                ((TextView) findViewById(R.id.testingView)).setAlpha(alpha);
+                mToolbar.setAlpha(alpha);
+                mBottomView.setAlpha(alpha);
             }
         });
 
-        dragPhotoView.getViewTreeObserver()
+        mDragPhotoView.getViewTreeObserver()
                 .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        dragPhotoView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        mDragPhotoView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         mOriginLeft = getIntent().getIntExtra("left", 0);
                         mOriginTop = getIntent().getIntExtra("top", 0);
                         mOriginHeight = getIntent().getIntExtra("height", 0);
@@ -78,10 +116,10 @@ public class ViewImageActivity extends AppCompatActivity {
                         int[] location = new int[2];
 
 
-                        dragPhotoView.getLocationOnScreen(location);
+                        mDragPhotoView.getLocationOnScreen(location);
 
-                        mTargetHeight = (float) dragPhotoView.getHeight();
-                        mTargetWidth = (float) dragPhotoView.getWidth();
+                        mTargetHeight = (float) mDragPhotoView.getHeight();
+                        mTargetWidth = (float) mDragPhotoView.getWidth();
                         mScaleX = (float) mOriginWidth / mTargetWidth;
                         mScaleY = (float) mOriginHeight / mTargetHeight;
 
@@ -90,19 +128,18 @@ public class ViewImageActivity extends AppCompatActivity {
 
                         mTranslationX = mOriginCenterX - targetCenterX;
                         mTranslationY = mOriginCenterY - targetCenterY;
-                        dragPhotoView.setTranslationX(mTranslationX);
-                        dragPhotoView.setTranslationY(mTranslationY);
+                        mDragPhotoView.setTranslationX(mTranslationX);
+                        mDragPhotoView.setTranslationY(mTranslationY);
 
-                        dragPhotoView.setScaleX(mScaleX);
-                        dragPhotoView.setScaleY(mScaleY);
+                        mDragPhotoView.setScaleX(mScaleX);
+                        mDragPhotoView.setScaleY(mScaleY);
 
                         performEnterAnimation();
 
-                        dragPhotoView.setMinScale(mScaleX);
+                        mDragPhotoView.setMinScale(mScaleX);
                     }
                 });
     }
-
 
     int mOriginLeft;
     int mOriginTop;
@@ -183,7 +220,7 @@ public class ViewImageActivity extends AppCompatActivity {
 
     private void finishWithAnimation() {
 
-        final DragPhotoView photoView = dragPhotoView;
+        final DragPhotoView photoView = mDragPhotoView;
         ValueAnimator translateXAnimator = ValueAnimator.ofFloat(0, mTranslationX);
         translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -255,7 +292,7 @@ public class ViewImageActivity extends AppCompatActivity {
     }
 
     private void performEnterAnimation() {
-        final DragPhotoView photoView = dragPhotoView;
+        final DragPhotoView photoView = mDragPhotoView;
         ValueAnimator translateXAnimator = ValueAnimator.ofFloat(photoView.getX(), 0);
         translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
