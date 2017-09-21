@@ -22,7 +22,7 @@ import com.pkmmte.view.CircularImageView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
-public class ViewImageActivity extends AppCompatActivity {
+public class ViewImageActivity extends AppCompatActivity implements View.OnClickListener {
     private DragPhotoView mDragPhotoView;
     private Toolbar mToolbar;
     private CircularImageView mUserImage;
@@ -61,6 +61,16 @@ public class ViewImageActivity extends AppCompatActivity {
         mThumbUp.setText(String.valueOf(mHit.getLikes()));
         mStar.setText(String.valueOf(mHit.getFavorites()));
         mComment.setText(String.valueOf(mHit.getComments()));
+
+        findViewById(R.id.holderViews).setOnClickListener(this);
+        findViewById(R.id.holderStar).setOnClickListener(this);
+        findViewById(R.id.holderThumbs).setOnClickListener(this);
+        findViewById(R.id.holderComment).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+
     }
 
     private void initToolbar() {

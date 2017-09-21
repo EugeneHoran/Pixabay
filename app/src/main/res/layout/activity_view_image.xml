@@ -61,6 +61,7 @@
         android:weightSum="4">
         <!--Like Star Comment-->
         <LinearLayout
+            android:id="@+id/holderViews"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -86,6 +87,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/holderThumbs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -111,6 +113,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/holderStar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -136,6 +139,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/holderComment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
