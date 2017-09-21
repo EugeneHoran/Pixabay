@@ -3,6 +3,12 @@
     <string name="single_column_view">Single-column view</string>
     <string name="multi_column_view">Multi-column view</string>
     <string name="search">Search</string>
+    <string name="there_was_an_error_loading_images">There was an error loading images</string>
+    <string name="retry">Retry</string>
+    <string name="testing">Testing</string>
+
+    <string name="KEYCODE_SEARCH">KEYCODE_SEARCH</string>
+    <string name="no_results">No Results</string>
 
     <string-array name="string_array_categories">
         <item>Animals</item>

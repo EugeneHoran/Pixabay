@@ -35,6 +35,7 @@ public interface PixabayService {
             @Query("editors_choice") boolean showEditorsChoice,
             @Query("order") ORDER popularOrLatest,
             @Query("category") String category,
+            @Query("q") String query,
             @Query("page") int page);
 
 

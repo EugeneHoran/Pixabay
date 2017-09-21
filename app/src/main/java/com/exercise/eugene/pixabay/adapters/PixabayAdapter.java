@@ -3,6 +3,7 @@ package com.exercise.eugene.pixabay.adapters;
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,17 @@ public class PixabayAdapter extends RecyclerView.Adapter<PixabayAdapter.ViewHold
     private List<Hit> mHitList;
     private ColorDrawable[] shotLoadingPlaceholders;
 
+
+    private PixabayAdapterListener mPixabayAdapterListener;
+
+    public interface PixabayAdapterListener {
+        void onItemClicked(String imageUrl, PixabayImageView mImage);
+    }
+
+    public void setListener(PixabayAdapterListener categoryAdapterListener) {
+        mPixabayAdapterListener = categoryAdapterListener;
+    }
+
     public PixabayAdapter(Activity hostActivity) {
         this.host = hostActivity;
         this.mHitList = new ArrayList<>();
@@ -35,10 +47,9 @@ public class PixabayAdapter extends RecyclerView.Adapter<PixabayAdapter.ViewHold
         notifyItemRangeInserted(positionStart, hitList.size());
     }
 
-    public void setFreshList() {
-        final int listSize = mHitList.size();
+    public void resetHitList() {
         mHitList.clear();
-        notifyItemRangeRemoved(0, listSize);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -57,13 +68,15 @@ public class PixabayAdapter extends RecyclerView.Adapter<PixabayAdapter.ViewHold
         return mHitList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        private CardView mCard;
         private PixabayImageView mImage;
         private TextView mTitle;
 
         private ViewHolder(View view) {
             super(view);
+            mCard = view.findViewById(R.id.card);
             mImage = view.findViewById(R.id.image);
             mTitle = view.findViewById(R.id.title);
         }
@@ -79,6 +92,16 @@ public class PixabayAdapter extends RecyclerView.Adapter<PixabayAdapter.ViewHold
                     .priority(Picasso.Priority.HIGH)
                     .onlyScaleDown()
                     .into(mImage);
+            mCard.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (view == mCard) {
+                if (mPixabayAdapterListener != null) {
+                    mPixabayAdapterListener.onItemClicked(mHitList.get(getAdapterPosition()).getWebformatURL(), mImage);
+                }
+            }
         }
     }
 }

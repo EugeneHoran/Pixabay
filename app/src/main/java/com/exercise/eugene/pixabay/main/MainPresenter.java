@@ -18,7 +18,7 @@ public class MainPresenter implements MainContract.Presenter {
     private PixabayService mPixabayService;
     private Pixabay mPixabay;
 
-    public MainPresenter(@NonNull MainContract.View view, Context context) {
+    MainPresenter(@NonNull MainContract.View view, Context context) {
         mView = view;
         mView.setPresenter(this);
         mPixabayApplication = PixabayApplication.create(context);
@@ -28,26 +28,51 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void start() {
-        loadPixabayImages(null, PixabayService.ORDER.popular, 1);
+        loadPixabayImages(null, PixabayService.ORDER.popular, null, 1);
     }
 
     @Override
-    public void detachView() {
-        mView = null;
-        clearDisposibles();
+    public void searchData(String search) {
+        loadPixabayImages(null, PixabayService.ORDER.popular, search, 1);
     }
 
     @Override
-    public void loadPixabayImages(String category, PixabayService.ORDER order, int page) {
-        clearDisposibles();
-        String mCategory = null;
-        if (category != null) {
-            mCategory = category.toLowerCase();
+    public void loadPixabayImages(final String category, PixabayService.ORDER order, final String query, final int page) {
+        // Reset error view if there was an error
+        mView.resetErrorView();
+        // Clear any subscriptions
+        clearSubscriptions();
+        // Set string in fragment
+        mView.setCategoryString(category);
+        // Set search string in fragment
+        mView.setSearchString(query);
+        // Show nav up if category or query is not null , Set title
+        if (category != null || query != null) {
+            String title;
+            if (category != null) {
+                title = category;
+            } else {
+                title = query;
+            }
+            mView.setActionbar(true, title);
+        } else {
+            mView.setActionbar(false, "Editors Choice");
         }
+        // Category search null?
+        final String mCategory = category == null ? null : category.toLowerCase();
+        // New Data Requested {if page = 1} (API page starts at 1)
+        if (page == 1) {
+            mView.resetPixabayAdapter();
+            mView.resetEndlessScrollListener();
+        }
+        // Hide or show Category Adapter
+        mView.showCategoryRecycler(category == null && query == null);
+        // API Call
         mDisposables.add(mPixabayService.getPhotos(
-                true,
-                PixabayService.ORDER.popular,
+                false,
+                order,
                 mCategory,
+                query,
                 page)
                 .subscribeOn(mPixabayApplication.defaultSubscribeScheduler())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -60,15 +85,25 @@ public class MainPresenter implements MainContract.Presenter {
                     @Override
                     public void onComplete() {
                         mView.showPixabayImageAdapter(mPixabay.getHits());
+                        if (mPixabay.getHits().size() == 0) {
+                            mView.showNoItems();
+                        }
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
+                        mView.showErrorView(e.getMessage(), category, page);
                     }
                 }));
     }
 
-    private void clearDisposibles() {
+    @Override
+    public void detachView() {
+        mView = null;
+        clearSubscriptions();
+    }
+
+    private void clearSubscriptions() {
         if (mDisposables != null) {
             mDisposables.clear();
         }

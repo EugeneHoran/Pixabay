@@ -4,8 +4,10 @@
     tools:context="com.exercise.eugene.pixabay.ScrollingActivity">
     <item
         android:id="@+id/action_search"
+        android:actionLayout="@xml/searchable"
         android:icon="@drawable/ic_search"
         android:orderInCategory="200"
         android:title="@string/search"
-        app:showAsAction="always" />
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
 </menu>
