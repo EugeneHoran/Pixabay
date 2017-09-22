@@ -1,7 +1,7 @@
 package com.exercise.eugene.pixabay.main;
 
 import com.exercise.eugene.pixabay.BaseView;
-import com.exercise.eugene.pixabay.client.PixabayService;
+import com.exercise.eugene.pixabay.client.Filter;
 import com.exercise.eugene.pixabay.model.Hit;
 
 import java.util.List;
@@ -20,6 +20,8 @@ public interface MainContract {
 
         void setSearchString(String search);
 
+        void setType(Filter.TYPE type);
+
         void setActionbar(boolean showNavUp, String title);
 
         void showNoItems();
@@ -34,7 +36,11 @@ public interface MainContract {
 
         void detachView();
 
-        void loadPixabayImages(String category, PixabayService.ORDER order, String query, int page);
+        void loadFeaturedImages(Filter.ORDER order, boolean makeApiCall);
+
+        void loadCategoryImages(Filter.ORDER order, String category, int page);
+
+        void loadSearchImages(Filter.ORDER order, String query, int page);
 
         void searchData(String search);
     }

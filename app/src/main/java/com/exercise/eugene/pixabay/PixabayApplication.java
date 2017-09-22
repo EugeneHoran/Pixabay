@@ -2,11 +2,14 @@ package com.exercise.eugene.pixabay;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.ContextWrapper;
 
 import com.exercise.eugene.pixabay.client.PixabayService;
+import com.exercise.eugene.pixabay.util.Prefs;
 
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
+import io.realm.Realm;
 
 public class PixabayApplication extends Application {
     private PixabayService service;
@@ -23,6 +26,15 @@ public class PixabayApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        // Initialize Realm. Should only be done once when the application starts.
+        Realm.init(this);
+        // Prefs Builder
+        new Prefs.Builder()
+                .setContext(this)
+                .setMode(ContextWrapper.MODE_PRIVATE)
+                .setPrefsName(getPackageName())
+                .setUseDefaultSharedPreference(true)
+                .build();
     }
 
     public PixabayService getService() {

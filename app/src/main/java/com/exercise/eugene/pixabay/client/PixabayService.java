@@ -25,19 +25,25 @@ import retrofit2.http.Query;
 
 public interface PixabayService {
 
-    enum ORDER {
-        popular,
-        latest
-    }
-
     @GET(BuildConfig.KEY)
-    Observable<Pixabay> getPhotos(
+    Observable<retrofit2.Response<Pixabay>> getFeaturedPhotos(
             @Query("editors_choice") boolean showEditorsChoice,
-            @Query("order") ORDER popularOrLatest,
-            @Query("category") String category,
-            @Query("q") String query,
+            @Query("order") String popularOrLatest,
             @Query("page") int page);
 
+    @GET(BuildConfig.KEY)
+    Observable<retrofit2.Response<Pixabay>> getCategoryPhotos(
+            @Query("editors_choice") boolean showEditorsChoice,
+            @Query("order") String popularOrLatest,
+            @Query("category") String category,
+            @Query("page") int page);
+
+    @GET(BuildConfig.KEY)
+    Observable<retrofit2.Response<Pixabay>> getSearchPhotos(
+            @Query("editors_choice") boolean showEditorsChoice,
+            @Query("order") String popularOrLatest,
+            @Query("q") String query,
+            @Query("page") int page);
 
     class Factory {
         public static PixabayService create() {
@@ -52,14 +58,7 @@ public interface PixabayService {
 
         private static OkHttpClient http3Client() {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                    .tlsVersions(TlsVersion.TLS_1_2)
-                    .cipherSuites(
-                            CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-                            CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-                            CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256)
-                    .build();
-            builder.connectionSpecs(Collections.singletonList(spec));
+            builder.connectionSpecs(Collections.singletonList(connectionSpec()));
             builder.connectTimeout(BuildConfig.TIMEOUT, TimeUnit.SECONDS);
             builder.writeTimeout(BuildConfig.TIMEOUT, TimeUnit.SECONDS);
             builder.readTimeout(BuildConfig.TIMEOUT, TimeUnit.SECONDS);
@@ -84,6 +83,26 @@ public interface PixabayService {
             });
             builder.addInterceptor(loggingInterceptor());
             return builder.build();
+        }
+
+        /**
+         * Issue
+         * <p>
+         * Where?  Samsung Galaxy S8; Android Version 7.0
+         * Error? HTTP FAILED: "javax.net.ssl.SSLHandshakeException: Handshake failed"
+         * Need to do more research on why this is occurring on specific Android Device or Android Version
+         *
+         * @return ConnectionSpec
+         */
+        private static ConnectionSpec connectionSpec() {
+            return new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                    .tlsVersions(TlsVersion.TLS_1_2)
+                    .cipherSuites(
+                            CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+                            CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+                            CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256
+                    )
+                    .build();
         }
 
         /**

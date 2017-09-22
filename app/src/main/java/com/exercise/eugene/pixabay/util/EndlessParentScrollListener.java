@@ -65,6 +65,13 @@ public abstract class EndlessParentScrollListener implements NestedScrollView.On
         this.loading = true;
     }
 
+    public void setCurrentPage(int page, int totalItemsCount) {
+        this.currentPage = page;
+        this.previousTotalItemCount = totalItemsCount;
+        this.loading = false;
+
+    }
+
     // Defines the process for actually loading more data based on page
     public abstract void onLoadMore(int page, int totalItemsCount);
 }

@@ -88,7 +88,7 @@ public class PixabayAdapter extends RecyclerView.Adapter<PixabayAdapter.ViewHold
             mImage.setAspectRatio(hit.getWebImageFormatRatio());
             mTitle.setText(hit.getUser());
             Picasso.with(host)
-                    .load(hit.getWebformatURL())
+                    .load(hit.getPreviewURL())
                     .placeholder(shotLoadingPlaceholders[0])
                     .resize(hit.getWebformatWidth(), hit.getWebformatHeight())
                     .priority(Picasso.Priority.HIGH)

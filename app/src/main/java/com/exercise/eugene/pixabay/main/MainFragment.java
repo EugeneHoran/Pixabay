@@ -3,7 +3,6 @@ package com.exercise.eugene.pixabay.main;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,10 +24,12 @@ import android.widget.TextView;
 import com.exercise.eugene.pixabay.R;
 import com.exercise.eugene.pixabay.adapters.CategoryAdapter;
 import com.exercise.eugene.pixabay.adapters.PixabayAdapter;
-import com.exercise.eugene.pixabay.client.PixabayService;
+import com.exercise.eugene.pixabay.client.Filter;
+import com.exercise.eugene.pixabay.data.PixabayPrefs;
 import com.exercise.eugene.pixabay.model.Hit;
 import com.exercise.eugene.pixabay.util.EndlessParentScrollListener;
 import com.exercise.eugene.pixabay.util.PixabayImageView;
+import com.exercise.eugene.pixabay.util.Prefs;
 import com.exercise.eugene.pixabay.viewimage.ViewImageActivity;
 
 import java.util.List;
@@ -37,6 +38,8 @@ public class MainFragment extends Fragment implements MainContract.View {
 
     private Activity mHost;
     private MainContract.Presenter mPresenter;
+    private int mLayoutManagerType = PixabayPrefs.PREF_LAYOUT_MANAGER_LINEAR;
+    private Filter.TYPE mType = Filter.TYPE.ALL;
 
     public MainFragment() {
         // Requires empty public constructor
@@ -49,8 +52,10 @@ public class MainFragment extends Fragment implements MainContract.View {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLayoutManagerType = Prefs.getInt(PixabayPrefs.PREF_LAYOUT_MANAGER, PixabayPrefs.PREF_LAYOUT_MANAGER_GRID);
         setHasOptionsMenu(true);
         mHost = getActivity();
+        mCategoryAdapter = new CategoryAdapter(mHost);
         mPixabayAdapter = new PixabayAdapter(mHost);
     }
 
@@ -70,9 +75,10 @@ public class MainFragment extends Fragment implements MainContract.View {
     private PixabayAdapter mPixabayAdapter;
     private RecyclerView mRecyclerPixabay;
     private RecyclerView.LayoutManager mLayoutManager;
-    private LayoutManagerType mCurrentLayoutManagerType;
     private EndlessParentScrollListener mEndlessScrollListener;
+    private CategoryAdapter mCategoryAdapter;
     private RecyclerView mRecyclerCategories;
+
     private ProgressBar mProgressBar;
     private LinearLayout mErrorView;
     private TextView mTextError;
@@ -90,16 +96,14 @@ public class MainFragment extends Fragment implements MainContract.View {
         mRecyclerCategories = v.findViewById(R.id.recycler_categories);
         mRecyclerCategories.setNestedScrollingEnabled(false);
         mRecyclerCategories.setLayoutManager(new LinearLayoutManager(mHost, LinearLayoutManager.HORIZONTAL, false));
-        CategoryAdapter mCategoryAdapter = new CategoryAdapter(mHost);
         mCategoryAdapter.setListener(mCategoryListener);
         mRecyclerCategories.setAdapter(mCategoryAdapter);
         // Pixabay Adapter
         mRecyclerPixabay = v.findViewById(R.id.recycler_pixabay);
         mRecyclerPixabay.setNestedScrollingEnabled(false);
-        mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
         mRecyclerPixabay.setAdapter(mPixabayAdapter);
         mPixabayAdapter.setListener(mPixabayListener);
-        setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
+        setRecyclerViewLayoutManager(mLayoutManagerType);
         // Views
         mProgressBar = v.findViewById(R.id.progressBar);
         mErrorView = v.findViewById(R.id.errorView);
@@ -112,6 +116,11 @@ public class MainFragment extends Fragment implements MainContract.View {
     @Override
     public void setActionbar(boolean showNavUp, String title) {
         mListener.setActionbar(showNavUp, title);
+    }
+
+    @Override
+    public void setType(Filter.TYPE type) {
+        mType = type;
     }
 
     @Override
@@ -163,7 +172,19 @@ public class MainFragment extends Fragment implements MainContract.View {
         mButtonReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPresenter.loadPixabayImages(category, PixabayService.ORDER.popular, mQuery, page);
+                switch (mType) {
+                    case ALL:
+                        mPresenter.loadFeaturedImages(Filter.ORDER.POPULAR, true);
+                        break;
+                    case CATEGORY:
+                        mPresenter.loadCategoryImages(Filter.ORDER.POPULAR, mCategory, page);
+                        break;
+                    case SEARCH:
+                        mPresenter.loadSearchImages(Filter.ORDER.POPULAR, mQuery, page);
+                        break;
+                    default:
+                        break;
+                }
             }
         });
     }
@@ -194,7 +215,7 @@ public class MainFragment extends Fragment implements MainContract.View {
     private CategoryAdapter.CategoryAdapterListener mCategoryListener = new CategoryAdapter.CategoryAdapterListener() {
         @Override
         public void onItemClicked(String categoryName) {
-            mPresenter.loadPixabayImages(categoryName, PixabayService.ORDER.popular, null, 1);
+            mPresenter.loadCategoryImages(Filter.ORDER.POPULAR, categoryName, 1);
         }
     };
 
@@ -209,9 +230,7 @@ public class MainFragment extends Fragment implements MainContract.View {
             intent.putExtra("top", location[1]);
             intent.putExtra("height", mImage.getHeight());
             intent.putExtra("width", mImage.getWidth());
-            Bundle bundle = new Bundle();
-            bundle.putParcelable("hit", hit);
-            intent.putExtras(bundle);
+            intent.putExtra("hit", hit);
             getActivity().startActivity(intent);
             getActivity().overridePendingTransition(0, 0);
         }
@@ -223,14 +242,16 @@ public class MainFragment extends Fragment implements MainContract.View {
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        if (mRecyclerPixabay.getLayoutManager() == null) {
-            inflater.inflate(R.menu.menu_list, menu);
-        } else {
-            if (mRecyclerPixabay.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+        switch (mLayoutManagerType) {
+            case PixabayPrefs.PREF_LAYOUT_MANAGER_LINEAR:
                 inflater.inflate(R.menu.menu_grid, menu);
-            } else if (mRecyclerPixabay.getLayoutManager() instanceof LinearLayoutManager) {
+                break;
+            case PixabayPrefs.PREF_LAYOUT_MANAGER_GRID:
                 inflater.inflate(R.menu.menu_list, menu);
-            }
+                break;
+            default:
+                inflater.inflate(R.menu.menu_grid, menu);
+                break;
         }
     }
 
@@ -240,9 +261,9 @@ public class MainFragment extends Fragment implements MainContract.View {
             case R.id.action_show_grid:
             case R.id.action_show_list:
                 if (mLayoutManager instanceof StaggeredGridLayoutManager) {
-                    setRecyclerViewLayoutManager(LayoutManagerType.LINEAR_LAYOUT_MANAGER);
+                    setRecyclerViewLayoutManager(PixabayPrefs.PREF_LAYOUT_MANAGER_GRID);
                 } else if (mLayoutManager instanceof LinearLayoutManager) {
-                    setRecyclerViewLayoutManager(LayoutManagerType.GRID_LAYOUT_MANAGER);
+                    setRecyclerViewLayoutManager(PixabayPrefs.PREF_LAYOUT_MANAGER_LINEAR);
                 }
                 return false;
             default:
@@ -254,30 +275,38 @@ public class MainFragment extends Fragment implements MainContract.View {
     /**
      * Handle Layout Manager
      */
-    private enum LayoutManagerType {
-        GRID_LAYOUT_MANAGER,
-        LINEAR_LAYOUT_MANAGER
-    }
-
-    public void setRecyclerViewLayoutManager(LayoutManagerType layoutManagerType) {
+    public void setRecyclerViewLayoutManager(int layoutManagerType) {
+        if (mLayoutManagerType != layoutManagerType) {
+            Prefs.putInt(PixabayPrefs.PREF_LAYOUT_MANAGER, layoutManagerType);
+        }
+        mLayoutManagerType = layoutManagerType;
         switch (layoutManagerType) {
-            case GRID_LAYOUT_MANAGER:
+            case PixabayPrefs.PREF_LAYOUT_MANAGER_LINEAR:
                 mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-                mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
                 break;
-            case LINEAR_LAYOUT_MANAGER:
+            case PixabayPrefs.PREF_LAYOUT_MANAGER_GRID:
                 mLayoutManager = new LinearLayoutManager(mHost);
-                mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
                 break;
             default:
                 mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-                mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
         }
         mRecyclerPixabay.setLayoutManager(mLayoutManager);
         mEndlessScrollListener = new EndlessParentScrollListener(mLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                mPresenter.loadPixabayImages(mCategory, PixabayService.ORDER.popular, mQuery, page);
+                switch (mType) {
+                    case ALL:
+                        mPresenter.loadFeaturedImages(Filter.ORDER.POPULAR, true);
+                        break;
+                    case CATEGORY:
+                        mPresenter.loadCategoryImages(Filter.ORDER.POPULAR, mCategory, page);
+                        break;
+                    case SEARCH:
+                        mPresenter.loadSearchImages(Filter.ORDER.POPULAR, mQuery, page);
+                        break;
+                    default:
+                        break;
+                }
             }
         };
         mNestedScrollView.setOnScrollChangeListener(mEndlessScrollListener);
@@ -289,7 +318,7 @@ public class MainFragment extends Fragment implements MainContract.View {
      */
     private OnFragmentInteractionListener mListener;
 
-    public interface OnFragmentInteractionListener {
+    interface OnFragmentInteractionListener {
         void setActionbar(boolean showNavUp, String title);
     }
 

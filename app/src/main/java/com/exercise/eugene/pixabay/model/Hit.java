@@ -7,7 +7,9 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Hit implements Parcelable {
+import io.realm.RealmObject;
+
+public class Hit extends RealmObject implements Parcelable {
     @SerializedName("id")
     @Expose
     private Integer id;
