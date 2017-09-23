@@ -59,8 +59,7 @@
                 android:id="@+id/textError"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/there_was_an_error_loading_images"
-                android:textColor="@color/white_light" />
+                android:text="@string/there_was_an_error_loading_images" />
 
             <Button
                 android:id="@+id/buttonReset"

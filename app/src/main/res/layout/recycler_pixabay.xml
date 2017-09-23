@@ -8,7 +8,7 @@
     android:animateLayoutChanges="true"
     android:clickable="true"
     android:foreground="?attr/selectableItemBackground"
-    card_view:cardBackgroundColor="@color/background_light"
+    card_view:cardBackgroundColor="@color/backgroundLight"
     card_view:cardElevation="2dp">
 
     <RelativeLayout
@@ -26,13 +26,13 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_below="@+id/image"
-            android:background="@color/background_light"
+            android:background="@color/backgroundLight"
             android:fontFamily="sans-serif-medium"
             android:gravity="center_vertical"
             android:maxLines="1"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:textColor="@color/white_light"
+            android:textColor="@color/textColorPrimary"
             android:textSize="13sp" />
     </RelativeLayout>
 </android.support.v7.widget.CardView>

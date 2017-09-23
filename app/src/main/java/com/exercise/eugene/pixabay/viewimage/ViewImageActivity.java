@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.exercise.eugene.pixabay.R;
@@ -22,6 +23,7 @@ import com.squareup.picasso.Picasso;
 public class ViewImageActivity extends AppCompatActivity implements View.OnClickListener {
     private DragPhotoView mDragPhotoView;
     private Toolbar mToolbar;
+    private LinearLayout mBottomView;
     private Hit mHit;
 
     @Override
@@ -31,9 +33,10 @@ public class ViewImageActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.activity_view_image);
         mHit = getIntent().getParcelableExtra("hit");
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mBottomView = (LinearLayout) findViewById(R.id.bottomView);
         mDragPhotoView = (DragPhotoView) findViewById(R.id.dragPhotoView);
         Picasso.with(this)
-                .load(mHit.getPreviewURL())
+                .load(mHit.getWebformatURL())
                 .priority(Picasso.Priority.HIGH)
                 .noFade()
                 .into(mDragPhotoView);
@@ -118,10 +121,96 @@ public class ViewImageActivity extends AppCompatActivity implements View.OnClick
      */
 
     private void initAnimation() {
+        mDragPhotoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ObjectAnimator animFadeTop;
+                ObjectAnimator animFadeBottom;
+                if (mToolbar.getVisibility() == View.VISIBLE) {
+                    animFadeTop = ObjectAnimator.ofFloat(mToolbar, "alpha", 1, 0);
+                    animFadeBottom = ObjectAnimator.ofFloat(mBottomView, "alpha", 1, 0);
+                } else {
+                    animFadeTop = ObjectAnimator.ofFloat(mToolbar, "alpha", 0, 1);
+                    animFadeBottom = ObjectAnimator.ofFloat(mBottomView, "alpha", 0, 1);
+                }
+                AnimatorSet animSet = new AnimatorSet();
+                animSet.setDuration(200);
+                animSet.playTogether(animFadeTop, animFadeBottom);
+                animSet.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        animator.removeAllListeners();
+                        if (mToolbar.getVisibility() == View.VISIBLE) {
+                            mToolbar.setVisibility(View.GONE);
+                            mBottomView.setVisibility(View.GONE);
+                        } else {
+                            mToolbar.setVisibility(View.VISIBLE);
+                            mBottomView.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+
+                    }
+                });
+                animSet.start();
+            }
+        });
         mDragPhotoView.setOnTapListener(new DragPhotoView.OnTapListener() {
             @Override
             public void onTap(DragPhotoView view) {
-                finishWithAnimation();
+                ObjectAnimator animFadeTop;
+                ObjectAnimator animFadeBottom;
+                if (mToolbar.getVisibility() == View.VISIBLE) {
+                    animFadeTop = ObjectAnimator.ofFloat(mToolbar, "alpha", 1, 0);
+                    animFadeBottom = ObjectAnimator.ofFloat(mBottomView, "alpha", 1, 0);
+                } else {
+                    animFadeTop = ObjectAnimator.ofFloat(mToolbar, "alpha", 0, 1);
+                    animFadeBottom = ObjectAnimator.ofFloat(mBottomView, "alpha", 0, 1);
+                }
+                AnimatorSet animSet = new AnimatorSet();
+                animSet.setDuration(200);
+                animSet.playTogether(animFadeTop, animFadeBottom);
+                animSet.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        animator.removeAllListeners();
+                        if (mToolbar.getVisibility() == View.VISIBLE) {
+                            mToolbar.setVisibility(View.GONE);
+                            mBottomView.setVisibility(View.GONE);
+                        } else {
+                            mToolbar.setVisibility(View.VISIBLE);
+                            mBottomView.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+
+                    }
+                });
+                animSet.start();
             }
         });
         mDragPhotoView.setOnExitListener(new DragPhotoView.OnExitListener() {
@@ -201,7 +290,12 @@ public class ViewImageActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void finishWithAnimation() {
-
+        ObjectAnimator animFadeT = ObjectAnimator.ofFloat(mToolbar, "alpha", 1, 0);
+        ObjectAnimator animFadeB = ObjectAnimator.ofFloat(mBottomView, "alpha", 1, 0);
+        AnimatorSet animSet = new AnimatorSet();
+        animSet.setDuration(200);
+        animSet.playTogether(animFadeT, animFadeB);
+        animSet.start();
         final DragPhotoView photoView = mDragPhotoView;
         ValueAnimator translateXAnimator = ValueAnimator.ofFloat(0, mTranslationX);
         translateXAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -313,6 +407,14 @@ public class ViewImageActivity extends AppCompatActivity implements View.OnClick
         });
         scaleXAnimator.setDuration(300);
         scaleXAnimator.start();
+        
+
+        ObjectAnimator animFadeT = ObjectAnimator.ofFloat(mToolbar, "alpha", 0, 1);
+        ObjectAnimator animFadeB = ObjectAnimator.ofFloat(mBottomView, "alpha", 0, 1);
+        AnimatorSet animSet = new AnimatorSet();
+        animSet.setDuration(600);
+        animSet.playTogether(animFadeT, animFadeB);
+        animSet.start();
     }
 
     @Override

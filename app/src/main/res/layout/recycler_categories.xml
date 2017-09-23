@@ -10,4 +10,5 @@
     android:fontFamily="sans-serif-medium"
     android:foreground="?attr/selectableItemBackground"
     android:gravity="center_vertical"
+    android:textColor="@color/textColorPrimaryOpposite"
     android:textSize="13sp" />
