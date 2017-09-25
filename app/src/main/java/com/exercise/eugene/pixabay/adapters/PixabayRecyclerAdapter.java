@@ -1,8 +1,6 @@
 package com.exercise.eugene.pixabay.adapters;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -21,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class PixabayAdapter extends RecyclerView.Adapter<PixabayAdapter.ViewHolder> {
+public class PixabayRecyclerAdapter extends RecyclerView.Adapter<PixabayRecyclerAdapter.ViewHolder> {
     private final Activity host;
     private List<Hit> mHitList;
     private ColorDrawable[] shotLoadingPlaceholders;
@@ -37,7 +35,7 @@ public class PixabayAdapter extends RecyclerView.Adapter<PixabayAdapter.ViewHold
         mPixabayAdapterListener = categoryAdapterListener;
     }
 
-    public PixabayAdapter(Activity hostActivity) {
+    public PixabayRecyclerAdapter(Activity hostActivity) {
         this.host = hostActivity;
         this.mHitList = new ArrayList<>();
         this.shotLoadingPlaceholders = new ColorDrawable[]{new ColorDrawable(ContextCompat.getColor(this.host, R.color.background_light))};
@@ -55,12 +53,12 @@ public class PixabayAdapter extends RecyclerView.Adapter<PixabayAdapter.ViewHold
     }
 
     @Override
-    public PixabayAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PixabayAdapter.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_pixabay, parent, false));
+    public PixabayRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new PixabayRecyclerAdapter.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_pixabay, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(PixabayAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(PixabayRecyclerAdapter.ViewHolder holder, int position) {
         holder.bindView();
         holder.mImage.requestLayout();
     }

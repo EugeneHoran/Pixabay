@@ -22,8 +22,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.exercise.eugene.pixabay.R;
-import com.exercise.eugene.pixabay.adapters.CategoryAdapter;
-import com.exercise.eugene.pixabay.adapters.PixabayAdapter;
+import com.exercise.eugene.pixabay.adapters.CategoryRecyclerAdapter;
+import com.exercise.eugene.pixabay.adapters.PixabayRecyclerAdapter;
 import com.exercise.eugene.pixabay.client.Filter;
 import com.exercise.eugene.pixabay.data.PixabayPrefs;
 import com.exercise.eugene.pixabay.model.Hit;
@@ -55,8 +55,8 @@ public class MainFragment extends Fragment implements MainContract.View {
         mLayoutManagerType = Prefs.getInt(PixabayPrefs.PREF_LAYOUT_MANAGER, PixabayPrefs.PREF_LAYOUT_MANAGER_GRID);
         setHasOptionsMenu(true);
         mHost = getActivity();
-        mCategoryAdapter = new CategoryAdapter(mHost);
-        mPixabayAdapter = new PixabayAdapter(mHost);
+        mCategoryAdapter = new CategoryRecyclerAdapter(mHost);
+        mPixabayAdapter = new PixabayRecyclerAdapter(mHost);
     }
 
     @Override
@@ -72,11 +72,11 @@ public class MainFragment extends Fragment implements MainContract.View {
     }
 
     private NestedScrollView mNestedScrollView;
-    private PixabayAdapter mPixabayAdapter;
+    private PixabayRecyclerAdapter mPixabayAdapter;
     private RecyclerView mRecyclerPixabay;
     private RecyclerView.LayoutManager mLayoutManager;
     private EndlessParentScrollListener mEndlessScrollListener;
-    private CategoryAdapter mCategoryAdapter;
+    private CategoryRecyclerAdapter mCategoryAdapter;
     private RecyclerView mRecyclerCategories;
 
     private ProgressBar mProgressBar;
@@ -212,14 +212,14 @@ public class MainFragment extends Fragment implements MainContract.View {
     /**
      * Adapter Listeners
      */
-    private CategoryAdapter.CategoryAdapterListener mCategoryListener = new CategoryAdapter.CategoryAdapterListener() {
+    private CategoryRecyclerAdapter.CategoryAdapterListener mCategoryListener = new CategoryRecyclerAdapter.CategoryAdapterListener() {
         @Override
         public void onItemClicked(String categoryName) {
             mPresenter.loadCategoryImages(Filter.ORDER.POPULAR, categoryName, 1);
         }
     };
 
-    private PixabayAdapter.PixabayAdapterListener mPixabayListener = new PixabayAdapter.PixabayAdapterListener() {
+    private PixabayRecyclerAdapter.PixabayAdapterListener mPixabayListener = new PixabayRecyclerAdapter.PixabayAdapterListener() {
         @Override
         public void onItemClicked(Hit hit, PixabayImageView mImage) {
             Intent intent = new Intent(getActivity(), ViewImageActivity.class);

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
@@ -47,7 +48,7 @@ public class ViewImageActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void initViews() {
-        if (mHit.getUserImageURL() != null) {
+        if (!TextUtils.isEmpty(mHit.getUserImageURL())) {
             Picasso.with(this)
                     .load(mHit.getUserImageURL())
                     .priority(Picasso.Priority.NORMAL)
@@ -407,7 +408,7 @@ public class ViewImageActivity extends AppCompatActivity implements View.OnClick
         });
         scaleXAnimator.setDuration(300);
         scaleXAnimator.start();
-        
+
 
         ObjectAnimator animFadeT = ObjectAnimator.ofFloat(mToolbar, "alpha", 0, 1);
         ObjectAnimator animFadeB = ObjectAnimator.ofFloat(mBottomView, "alpha", 0, 1);

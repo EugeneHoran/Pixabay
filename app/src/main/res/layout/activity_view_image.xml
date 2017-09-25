@@ -31,6 +31,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_centerVertical="true"
+                android:layout_marginRight="16dp"
                 app:border="true"
                 app:border_color="#EEEEEE"
                 app:border_width="1dp"
@@ -43,7 +44,6 @@
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/userImage"
                 android:fontFamily="sans-serif-condensed"
-                android:paddingLeft="16dp"
                 android:textColor="@color/white_light"
                 android:textSize="14sp" />
         </RelativeLayout>

@@ -158,10 +158,20 @@ public class MainPresenter implements MainContract.Presenter {
 
                     @Override
                     public void onComplete() {
-                        Pixabay mPixabay = mPixabayResponse.body();
-                        mView.showPixabayImageAdapter(mPixabay.getHits());
-                        if (mPixabay.getHits().size() == 0) {
-                            mView.showNoItems();
+                        if (mPixabayResponse.isSuccessful()) {
+                            Pixabay mPixabay = mPixabayResponse.body();
+                            mView.showPixabayImageAdapter(mPixabay.getHits());
+                            if (mPixabay.getHits().size() == 0) {
+                                mView.showNoItems();
+                            }
+                        } else {
+                            String error;
+                            try {
+                                error = mPixabayResponse.errorBody().string();
+                            } catch (Exception e) {
+                                error = "Error";
+                            }
+                            mView.showErrorView(error, category, page);
                         }
                     }
 
@@ -207,10 +217,20 @@ public class MainPresenter implements MainContract.Presenter {
 
                     @Override
                     public void onComplete() {
-                        Pixabay mPixabay = mPixabayResponse.body();
-                        mView.showPixabayImageAdapter(mPixabay.getHits());
-                        if (mPixabay.getHits().size() == 0) {
-                            mView.showNoItems();
+                        if (mPixabayResponse.isSuccessful()) {
+                            Pixabay mPixabay = mPixabayResponse.body();
+                            mView.showPixabayImageAdapter(mPixabay.getHits());
+                            if (mPixabay.getHits().size() == 0) {
+                                mView.showNoItems();
+                            }
+                        } else {
+                            String error;
+                            try {
+                                error = mPixabayResponse.errorBody().string();
+                            } catch (Exception e) {
+                                error = "Error";
+                            }
+                            mView.showErrorView(error, query, page);
                         }
                     }
 
@@ -235,7 +255,9 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void detachView() {
         mView = null;
-        mPixabayDao.removeAllChangeListeners();
+        if (mPixabayDao != null) {
+            mPixabayDao.removeAllChangeListeners();
+        }
         if (!mRealm.isClosed()) {
             mRealm.close();
         }

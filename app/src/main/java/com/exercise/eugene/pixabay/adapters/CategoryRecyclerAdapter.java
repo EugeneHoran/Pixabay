@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.exercise.eugene.pixabay.R;
 
-public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
+public class CategoryRecyclerAdapter extends RecyclerView.Adapter<CategoryRecyclerAdapter.ViewHolder> {
     private String[] categoryList;
     private CategoryAdapterListener mCategoryAdapterListener;
 
@@ -22,18 +22,18 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         mCategoryAdapterListener = categoryAdapterListener;
     }
 
-    public CategoryAdapter(Activity host) {
+    public CategoryRecyclerAdapter(Activity host) {
         Resources res = host.getResources();
         categoryList = res.getStringArray(R.array.string_array_categories);
     }
 
     @Override
-    public CategoryAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new CategoryAdapter.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_categories, parent, false));
+    public CategoryRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new CategoryRecyclerAdapter.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_categories, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(CategoryAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(CategoryRecyclerAdapter.ViewHolder holder, int position) {
         holder.bindView();
     }
 

@@ -105,6 +105,7 @@ public interface PixabayService {
                     .build();
         }
 
+
         /**
          * Log the body of the responses
          *
